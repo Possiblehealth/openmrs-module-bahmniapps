@@ -8,7 +8,7 @@ angular.module('bahmni.clinical')
             $scope.toggles = {
                 expandInactive: false
             };
-            $scope.consultation.condition = new Bahmni.Common.Domain.Condition({});
+            $scope.consultation.condition = $scope.consultation.condition || new Bahmni.Common.Domain.Condition({});
             $scope.conditionsStatuses = {
                 'CONDITION_LIST_ACTIVE': 'ACTIVE',
                 'CONDITION_LIST_INACTIVE': 'INACTIVE',
@@ -77,6 +77,7 @@ angular.module('bahmni.clinical')
                 $scope.canDeleteDiagnosis = findPrivilege(Bahmni.Common.Constants.deleteDiagnosisPrivilege);
                 $scope.allowOnlyCodedDiagnosis = appService.getAppDescriptor().getConfig("allowOnlyCodedDiagnosis") &&
                                                  appService.getAppDescriptor().getConfig("allowOnlyCodedDiagnosis").value;
+                $scope.hideConditions = appService.getAppDescriptor().getConfigValue("hideConditions");
                 addPlaceHolderDiagnosis();
                 diagnosisService.getDiagnosisConceptSet().then(function (result) {
                     $scope.diagnosisMetaData = result.data.results[0];
@@ -117,8 +118,10 @@ angular.module('bahmni.clinical')
                 var invalidPastDiagnoses = $scope.consultation.pastDiagnoses.filter(function (diagnosis) {
                     return !$scope.isValid(diagnosis);
                 });
+                var isValidConditionForm = ($scope.consultation.condition.isEmpty() || $scope.consultation.condition.isValid());
                 return {
-                    allow: invalidnewlyAddedDiagnoses.length === 0 && invalidPastDiagnoses.length === 0 && invalidSavedDiagnosesFromCurrentEncounter.length === 0,
+                    allow: invalidnewlyAddedDiagnoses.length === 0 && invalidPastDiagnoses.length === 0
+                    && invalidSavedDiagnosesFromCurrentEncounter.length === 0 && isValidConditionForm,
                     errorMessage: $scope.errorMessage
                 };
             };
@@ -126,21 +129,8 @@ angular.module('bahmni.clinical')
 
             var mapConcept = function (result) {
                 return _.map(result.data, function (concept) {
-                    if (concept.conceptName === concept.matchedName) {
-                        return {
-                            value: concept.matchedName,
-                            concept: {
-                                name: concept.conceptName,
-                                uuid: concept.conceptUuid
-                            },
-                            lookup: {
-                                name: concept.conceptName,
-                                uuid: concept.conceptUuid
-                            }
-                        };
-                    }
-                    return {
-                        value: concept.matchedName + "=>" + concept.conceptName,
+                    var response = {
+                        value: concept.matchedName || concept.conceptName,
                         concept: {
                             name: concept.conceptName,
                             uuid: concept.conceptUuid
@@ -150,6 +140,14 @@ angular.module('bahmni.clinical')
                             uuid: concept.conceptUuid
                         }
                     };
+
+                    if (concept.matchedName && concept.matchedName !== concept.conceptName) {
+                        response.value = response.value + " => " + concept.conceptName;
+                    }
+                    if (concept.code) {
+                        response.value = response.value + " (" + concept.code + ")";
+                    }
+                    return response;
                 });
             };
 
@@ -208,7 +206,7 @@ angular.module('bahmni.clinical')
                     }
                 }
                 if (existingCondition.status != condition.status) {
-                    existingCondition.endDate = condition.onSetDate || DateUtil.today();
+                    existingCondition.onSetDate = condition.onSetDate || DateUtil.today();
                     existingCondition.status = condition.status;
                 }
                 existingCondition.additionalDetail = condition.additionalDetail;
@@ -229,7 +227,7 @@ angular.module('bahmni.clinical')
             };
             $scope.markAs = function (condition, status) {
                 condition.status = status;
-                condition.endDate = DateUtil.today();
+                condition.onSetDate = DateUtil.today();
                 expandInactiveOnNewInactive(condition);
             };
             var clearCondition = function () {

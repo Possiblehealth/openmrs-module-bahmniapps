@@ -36,9 +36,13 @@ angular.module('bahmni.common.domain')
             });
         };
         this.getFollowUpConditionConcept = function () {
-            return $http.get(Bahmni.Common.Constants.conceptSearchByFullNameUrl +
-                             "&name=" + Bahmni.Common.Constants.followUpConditionConcept +
-                             "&v=custom:(uuid,name:(name))", {cache: true});
+            return $http.get(Bahmni.Common.Constants.conceptSearchByFullNameUrl, {
+                params: {
+                    name: Bahmni.Common.Constants.followUpConditionConcept,
+                    v: "custom:(uuid,name:(name))"
+                },
+                cache: true
+            });
         };
         var getLatestActiveCondition = function (conditionHistories, latestCondition) {
             var conditionHistory = _.find(conditionHistories, {

@@ -9,7 +9,7 @@ Overlay window is visible when page is loading.
 
 ```html_example
 <div id="overlay">
-  <div></div>
+<div></div>
 </div>
 ```
 
@@ -282,6 +282,7 @@ body {
 
 /*** search page css end ***/
 .apps {
+  text-align: center;
   li {
     display: inline-block;
     a {
@@ -316,7 +317,8 @@ body {
   left: 10px;
   right: 10px;
   top: 0;
-  margin: 80px auto;
+  bottom: 0;
+  margin: auto;
   font-size: 0.865em;
   max-width: 500px;
   form {
@@ -337,8 +339,15 @@ body {
     }
     .locale-wrapper {
       font-size: 14px;
+      max-width: 300px;
+      overflow: hidden;
       .locale-text {
         padding-right: 10px;
+        max-width: 130px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        float: left;
       }
       select {
         background-color: #FFF;
@@ -415,8 +424,6 @@ body {
   }
   @media screen and (min-width: 1025px) {
     width: 500px;
-    margin: auto;
-    bottom: 0;
     .login-body {
       padding-top: 10px;
       .note-container .note {
@@ -483,18 +490,36 @@ body {
   left: 0;
   width: 100%;
 }
+.bottom-logos-wrapper {
+  @media screen and (min-width: 1025px) {
+    width: 700px;
+    margin-left: -20%;
+  }
+  width:auto;
+  text-align: center;
+  margin-bottom: 15px;
+  margin-top: 20px;
+  img {
+    height: 60px;
+    padding: 0 8px;
+  }  
+}
 .power-by {
-  position: absolute;
+  position: fixed;
   width: 100%;
   bottom: 0;
   text-align: center;
   background: #fafafa;
   padding-bottom: 5px;
-  font-size: 10px;
+  font-size: 12px;
+  color: #898989;
   img {
-    width: 65px;
+    width: 55px;
     vertical-align: middle;
     margin: 0 1px;
+  }
+  a {
+    color: #000;
   }
 }
 .clint-logo-wrapper {
@@ -504,6 +529,7 @@ body {
   img {
     max-width: 200px;
     vertical-align: middle;
+    max-height: 120px;
   }
   span {
     vertical-align: middle;

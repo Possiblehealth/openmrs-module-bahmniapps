@@ -1,22 +1,28 @@
-<dev class="clint-logo-wrapper">
+<div class="clint-logo-wrapper">
     <img class="implementor-logo" src={{logo}} >
-    <span ng-if="CLIENT_TEXT" class="client_text"> {{'LOGIN_PAGE_CLIENT_TEXT' | translate }} </span>
-</dev>
+    <span ng-if="titleText" class="title_text"> {{'LOGIN_PAGE_TITLE_TEXT' | translate }} </span>
+</div>
+
 <div class="login" ng-hide="showOTP">
-    <div ng-if="HEADER_TEXT" class="emr-login-text">
+    <div ng-if="headerText" class="emr-login-text">
         <b>{{'LOGIN_PAGE_HEADER_TEXT'| translate}} </b>
     </div>
     <header class="reg-header">
         <div class="left">{{'LOGIN_LABEL_LOGIN_KEY' | translate}}</div>
         <div class="right locale-wrapper">
             <span class="locale-text">{{'LOGIN_LABEL_SELECT_LOCALE_KEY' | translate}} </span>
-            <select id="locale" ng-model="selectedLocale" ng-options="item as item for item in locales" required/>
+            <select id="locale" ng-model="selectedLocale" ng-options="item.code as item.nativeName for item in locales" required/>
         </div>
     </header>
 
     <form ng-submit="login()" name="loginForm" bm-form autofillable="true">
         <div class="login-body">
             <div class="note-container">
+                <div class="note error" ng-if="!isChrome()">
+                    <div class="text">
+                    {{ 'LOGIN_UNSUPPORTED_BROWSER_KEY'  | translate }}
+                    </div>
+                </div>
                 <div class="note error" ng-show="errorMessageTranslateKey">
                     <div class="text">
                         {{errorMessageTranslateKey | translate}}
@@ -55,7 +61,7 @@
                 </div>
                 <div class="field-value">
                     <select id="location" ng-model="loginInfo.currentLocation"
-                            ng-options="item as item.display for item in locations" required>
+                            ng-options="item as (item.display | translate) for item in locations | orderBy:'display'" required>
                         <option value="">{{'LOGIN_LABEL_SELECT_LOCATION_KEY' | translate}}</option>
                     </select>
                 </div>
@@ -65,11 +71,16 @@
                 <button type="submit" class="confirm">{{'LOGIN_LABEL_LOGIN_KEY' | translate}}</button>
             </div>
         </div>
+
     </form>
 
     <div class="warning-message">
         <span ng-if="warning"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {{warning}}</span>
         <p>{{warningMessage | translate :timeZoneObject}} </p>
+    </div>
+
+    <div ng-show="bottomLogos" class="bottom-logos-wrapper">
+        <img ng-repeat="logo in bottomLogos" id="bottom-logos-image" src={{logo}}>
     </div>
 
 </div>
@@ -113,9 +124,8 @@
 </div>
 
 <div class="power-by">
-    Power by
+    Powered by
         <img src="./../images/twlogo.png" alt="ThoughtWorks">
         <img src="./../images/bahmniLogoFull.png" alt="Bahmni" >
-    <br>
     <a href={{helpLink}}> Bahmni Help</a>
 </div>

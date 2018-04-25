@@ -28,8 +28,8 @@
     Condition.prototype.clearConcept = function () {
         this.concept.uuid = undefined;
     };
-    Condition.prototype.isIllegalValue = function () {
-        return this.concept.name && !this.concept.uuid && !this.isNonCoded;
+    Condition.prototype.isValidConcept = function () {
+        return !(this.concept.name && !this.concept.uuid && !this.isNonCoded);
     };
     Condition.prototype.isValid = function () {
         return this.status && ((this.concept.name && this.isNonCoded) || this.concept.uuid);
@@ -39,6 +39,10 @@
     };
     Condition.prototype.displayString = function () {
         return this.conditionNonCoded || this.concept.shortName || this.concept.name;
+    };
+    Condition.prototype.isEmpty = function () {
+        return !this.status && !this.concept.name && !(this.isNonCoded || this.concept.uuid)
+            && !this.onSetDate && !this.additionalDetail;
     };
 
     Condition.createFromDiagnosis = function (diagnosis) {

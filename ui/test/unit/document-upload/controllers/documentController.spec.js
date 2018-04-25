@@ -15,6 +15,7 @@ describe("DocumentController", function () {
     var sessionService;
     var visitService;
     var patientService;
+    var messagingService;
 
     var createVisit = function (startDateTime, stopDateTime, uuid) {
         var visit = new Bahmni.DocumentUpload.Visit();
@@ -198,11 +199,12 @@ describe("DocumentController", function () {
         spinner = jasmine.createSpyObj('spinner', ['forPromise']);
         encounterConfig = jasmine.createSpyObj('encounterConfig', ['getEncounterTypeUuid']);
         appConfig = jasmine.createSpyObj('encounterConfig', ['encounterType']);
-        visitDocumentService = jasmine.createSpyObj('visitDocumentService', ['save']);
+        visitDocumentService = jasmine.createSpyObj('visitDocumentService', ['save', 'saveFile', 'getFileType']);
         sessionService = jasmine.createSpyObj('sessionService', ['getLoginLocationUuid']);
         patientService = jasmine.createSpyObj('patientService', ['getPatient']);
         encounterService = jasmine.createSpyObj('encounterService',['find', 'getEncountersForEncounterType']);
         visitService = jasmine.createSpyObj('visitService',['getVisitType','search']);
+        messagingService = jasmine.createSpyObj('messagingService',['showMessage']);
     }));
 
     /*Mock of constructor Bahmni.PatientMapper*/
@@ -290,7 +292,8 @@ describe("DocumentController", function () {
                 sessionService: sessionService,
                 patientService: patientService,
                 $translate: translate,
-                visitService: visitService
+                visitService: visitService,
+                messagingService: messagingService
             });
             scope.visits = [visit1, visit2];
 
@@ -372,11 +375,11 @@ describe("DocumentController", function () {
             scope.newVisit = newVisit;
             scope.visits = [visit3];
 
-            newVisit.startDatetime = "April 25, 2014";
+            newVisit.startDatetime = "April 23, 2014";
             newVisit.stopDatetime = "";
             expect(scope.isNewVisitDateValid()).toBe(false);
 
-            newVisit.startDatetime = "April 26, 2014";
+            newVisit.startDatetime = "April 22, 2014";
             newVisit.stopDatetime = "";
             expect(scope.isNewVisitDateValid()).toBe(false);
 
@@ -446,9 +449,9 @@ describe("DocumentController", function () {
 
         it('should save the visit document', function () {
             setUp();
+            visit1.visitType.display = 'OPD';
             var visitDocumentServiceSavePromise = specUtil.createServicePromise('visitDocumentService');
             visitDocumentService.save.and.returnValue(visitDocumentServiceSavePromise);
-
             scope.save(visit1);
 
             expect(visitDocumentService.save).toHaveBeenCalledWith(visitDocument);
@@ -457,6 +460,7 @@ describe("DocumentController", function () {
 
         it('should save the existing visit data even there is invalid date entered under new visit section', function(){
             setUp();
+            visit1.visitType.display = 'OPD';
             var newVisit = new Bahmni.DocumentUpload.Visit();
             scope.newVisit = newVisit;
 
@@ -505,7 +509,7 @@ describe("DocumentController", function () {
             scope.canDeleteFile(obs);
             expect(scope.canDeleteFile(obs)).toBeTruthy();
         })
-    })
+    });
 
     describe('Validate Order', function () {
         beforeEach(function () {
@@ -534,7 +538,74 @@ describe("DocumentController", function () {
 
             expect(scope.currentVisit).toBe(newVisit);
         });
-    })
+    });
+    
+    describe("OnSelect", function() {
+        it("should save the image file", function () {
+            setUp();
+            visitDocumentService.saveFile.and.returnValue(specUtil.simplePromise({data: { url : "tes-file.jpeg" }}));
+            visitDocumentService.getFileType.and.returnValue("image");
+            var newVisit = new Bahmni.DocumentUpload.Visit();
+            appConfig.encounterType.and.returnValue("Radiology");
+
+            var file = "image/jpeg;base64asdlkjfklasjdfalsjdfkl";
+            var fileName = "test-file.jpeg";
+            var fileType = "image";
+
+            scope.onSelect(file, newVisit, fileName, "image/jpeg");
+
+            expect(visitDocumentService.saveFile).toHaveBeenCalledWith(file, "patient uuid" , appConfig.encounterType, fileName, fileType);
+
+        });
+
+        it("should save the pdf file", function () {
+            setUp();
+            visitDocumentService.saveFile.and.returnValue(specUtil.simplePromise({data: { url : "tes-file.pdf" }}));
+            visitDocumentService.getFileType.and.returnValue("pdf");
+            var newVisit = new Bahmni.DocumentUpload.Visit();
+            appConfig.encounterType.and.returnValue("Radiology");
+
+            var file = "application/pdf;base64asdlkjfklasjdfalsjdfkl";
+            var fileName = "test-file.pdf";
+            var fileType = "pdf";
+
+            scope.onSelect(file, newVisit, fileName, "application/pdf");
+
+            expect(visitDocumentService.saveFile).toHaveBeenCalledWith(file, "patient uuid" , appConfig.encounterType, fileName, fileType);
+
+        });
+
+        it("should show error message dialog box when user uploads a video", function () {
+            setUp();
+            messagingService.showMessage.and.returnValue(specUtil.simplePromise("something"));
+            visitDocumentService.getFileType.and.returnValue("not_supported");
+            var newVisit = new Bahmni.DocumentUpload.Visit();
+            appConfig.encounterType.and.returnValue("Radiology");
+
+            var file = "video/mp4;base64asdlkjfklasjdfalsjdfkl";
+            var fileName = "test-file.mp4";
+            scope.$$phase = true;
+            scope.onSelect(file, newVisit, fileName, "video/mp4");
+
+            expect(messagingService.showMessage).toHaveBeenCalledWith('error', "File type is not supported");
+
+        });
+
+        it("should show error message dialog box when user uploads a file which is not image and pdf", function () {
+            setUp();
+            messagingService.showMessage.and.returnValue(specUtil.simplePromise("something"));
+            visitDocumentService.getFileType.and.returnValue("not_supported");
+            var newVisit = new Bahmni.DocumentUpload.Visit();
+            appConfig.encounterType.and.returnValue("Radiology");
+
+            var file = "data/csv;base64asdlkjfklasjdfalsjdfkl";
+            var fileName = "test-file.csv";
+
+            scope.$$phase = true;
+            scope.onSelect(file, newVisit, fileName, "document/csv");
+
+            expect(messagingService.showMessage).toHaveBeenCalledWith('error', "File type is not supported");
+
+        });
+    });
 });
-
-

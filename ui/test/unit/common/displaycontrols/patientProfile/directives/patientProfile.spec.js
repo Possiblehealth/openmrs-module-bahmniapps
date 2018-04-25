@@ -1,15 +1,15 @@
 'use strict';
 
 describe("Patient Profile display control", function () {
-    var element, scope, $compile, mockBackend, $window, $q, openMRSPatientMockData, visitService, appService,
-        appDescriptor, clinicalAppConfig;
+    var element, scope, $compile, mockBackend, $window, $q, openMRSPatientMockData, visitService, translateFilter;
 
     beforeEach(module('ngHtml2JsPreprocessor'));
     beforeEach(module('bahmni.common.patient'));
     beforeEach(module('bahmni.common.uiHelper'));
     beforeEach(module('bahmni.common.displaycontrol.patientprofile'));
     beforeEach(module(function ($provide) {
-        clinicalAppConfig = {patientConfig: {}};
+        translateFilter = jasmine.createSpy('translateFilter');
+        $provide.value('translateFilter', translateFilter);
 
         $provide.value('$stateParams', {configName: "programs"});
 
@@ -194,18 +194,6 @@ describe("Patient Profile display control", function () {
         var REP = "custom:(attributes:(value,attributeType:(display,name)))";
         expect(visitService.getVisit).toHaveBeenCalledWith("visit-uuid-00001", REP);
         expect(isoScope.hasBeenAdmitted).toBe(true);
-    });
-
-    it("should set patient name with middle name when configured",function(){
-        clinicalAppConfig.patientConfig.showMiddleNameOn = ['patient-profile'];
-        var isoScope = createIsoScope({});
-        expect(isoScope.patient.name).toBe('GIVEN_NAME MIDDLE_NAME FAMILY_NAME');
-    });
-
-    it("should not set patient name with middle name when not configured",function(){
-        clinicalAppConfig.patientConfig.showMiddleNameOn = [];
-        var isoScope = createIsoScope({});
-        expect(isoScope.patient.name).toBe('GIVEN_NAME FAMILY_NAME');
     });
 
     var createIsoScope = function (config) {
