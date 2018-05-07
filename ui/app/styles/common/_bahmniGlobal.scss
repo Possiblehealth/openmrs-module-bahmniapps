@@ -378,4 +378,14 @@ u, .add-drug-btninput[value]:first-letter {
 }
 .ngdialog.ngdialog-theme-default .ngdialog-close {
       z-index: 999;
-    }
+}
+input[readonly].nepali-datepicker {
+  cursor: text;
+  background-color: #FFF;
+  color: #363463;
+}
+input[readonly]:focus.nepali-datepicker {
+  outline: 2px solid #007FFF;
+  background-color: #FFFDF7;
+  cursor: text;
+}

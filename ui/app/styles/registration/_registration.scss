@@ -200,7 +200,6 @@ body{
   margin: 2px 0;
 }
 
-
 .form-builder-row {
 
   .label-wrap {
@@ -234,5 +233,8 @@ body{
       }
     }
   }
+}
 
+.clear-line-fix {
+  clear: both;
 }

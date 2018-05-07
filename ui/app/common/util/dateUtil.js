@@ -62,7 +62,7 @@ Bahmni.Common.Util.DateUtil = {
         var numberOfDays = this.diffInDays(startDate, endDate);
         var days = [];
         for (var i = 0; i <= numberOfDays; i++) {
-            days.push({dayNumber: i + 1, date: this.addDays(startDate, i)});
+            days.push({ dayNumber: i + 1, date: this.addDays(startDate, i) });
         }
         return days;
     },
@@ -223,10 +223,10 @@ Bahmni.Common.Util.DateUtil = {
     },
 
     convertToUnits: function (minutes) {
-        var allUnits = {"Years": 365 * 24 * 60, "Months": 30 * 24 * 60, "Weeks": 7 * 24 * 60, "Days": 24 * 60, "Hours": 60, "Minutes": 1};
+        var allUnits = { "Years": 365 * 24 * 60, "Months": 30 * 24 * 60, "Weeks": 7 * 24 * 60, "Days": 24 * 60, "Hours": 60, "Minutes": 1 };
 
         var durationRepresentation = function (value, unitName, unitValueInMinutes) {
-            return {"value": value, "unitName": unitName, "unitValueInMinutes": unitValueInMinutes, "allUnits": allUnits };
+            return { "value": value, "unitName": unitName, "unitValueInMinutes": unitValueInMinutes, "allUnits": allUnits };
         };
 
         for (var unitName in allUnits) {
@@ -277,5 +277,10 @@ Bahmni.Common.Util.DateUtil = {
     },
     isBeforeTime: function (time, otherTime) {
         return moment(time, 'hh:mm a').format('YYYY-MM-DD');
+    },
+    npToday: function () {
+        var currentDate = this.now();
+        var currentNepaliDate = calendarFunctions.getBsDateByAdDate(currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDate());
+        return calendarFunctions.bsDateFormat("%y-%m-%d", currentNepaliDate.bsYear, currentNepaliDate.bsMonth, currentNepaliDate.bsDate);
     }
 };
