@@ -68,7 +68,7 @@ angular.module('bahmni.registration')
                 $scope.patient = patient.create();
                 prepopulateDefaultsInFields();
                 expandSectionsWithDefaultValue();
-                $scope.patientLoaded = true;
+                $scope.patientLoaded = true;          
             };
             init();
 

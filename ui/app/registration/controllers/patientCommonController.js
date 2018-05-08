@@ -70,6 +70,9 @@ angular.module('bahmni.registration')
             $scope.enableNepaliCalendar = appService.getAppDescriptor().getConfigValue("enableNepaliCalendar");
             $scope.npToday = Bahmni.Common.Util.DateUtil.npToday();
 
+            $scope.enableNepaliCalendar = appService.getAppDescriptor().getConfigValue("enableNepaliCalendar");
+            $scope.npToday = Bahmni.Common.Util.DateUtil.npToday();
+            
             $scope.getDeathConcepts = function () {
                 return $http({
                     url: Bahmni.Common.Constants.globalPropertyUrl,
