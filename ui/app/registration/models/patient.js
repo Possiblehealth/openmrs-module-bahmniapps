@@ -11,7 +11,6 @@ angular.module('bahmni.registration')
                     this.age = age.create(null, null, null);
                 }
             };
-
             var updateAdDate = function () {
                 if (this.birthdateBS) {
                     var dateStr = this.birthdateBS.split("-");

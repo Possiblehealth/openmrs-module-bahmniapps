@@ -199,4 +199,3 @@ angular.module('bahmni.registration')
                 $scope.patient.deathDate = calendarFunctions.getAdDateByBsDate(calendarFunctions.getNumberByNepaliNumber(dateStr[0]), calendarFunctions.getNumberByNepaliNumber(dateStr[1]), calendarFunctions.getNumberByNepaliNumber(dateStr[2]));
             };
         }]);
-

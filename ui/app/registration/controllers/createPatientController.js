@@ -71,7 +71,6 @@ angular.module('bahmni.registration')
                 $scope.patientLoaded = true;
             };
             init();
-
             var prepopulateFields = function () {
                 var fieldsToPopulate = appService.getAppDescriptor().getConfigValue("prepopulateFields");
                 if (fieldsToPopulate) {
