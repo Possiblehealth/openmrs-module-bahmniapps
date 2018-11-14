@@ -79,17 +79,14 @@ angular
                 url: '/calendar',
                 tabName: 'calendar',
                 params: {
-                    viewDate: null
+                    viewDate: null,
+                    doFetchAppointmentsData: true,
+                    appointmentsData: null
                 },
                 views: {
                     'content@viewAppointments': {
                         templateUrl: 'views/manage/calendar/calendarView.html',
                         controller: 'AppointmentsCalendarViewController'
-                    }
-                },
-                resolve: {
-                    appointmentsContext: function (appointmentsInitialization) {
-                        return appointmentsInitialization();
                     }
                 }
             }).state('home.manage.appointments.calendar.new', {
@@ -132,7 +129,9 @@ angular
                 tabName: 'list',
                 params: {
                     viewDate: null,
-                    patient: null
+                    patient: null,
+                    doFetchAppointmentsData: true,
+                    appointmentsData: null
                 },
                 views: {
                     'content@viewAppointments': {
@@ -204,4 +203,6 @@ angular
             });
 
             $bahmniTranslateProvider.init({app: 'appointments', shouldMerge: true});
+        }]).run(['$window', function ($window) {
+            moment.locale($window.localStorage["NG_TRANSLATE_LANG_KEY"] || "en");
         }]);

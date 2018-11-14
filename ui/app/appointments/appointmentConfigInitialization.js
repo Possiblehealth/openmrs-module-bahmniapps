@@ -42,13 +42,14 @@ angular.module('bahmni.appointments').factory('appointmentConfigInitialization',
                 };
 
                 var getAllProviders = function () {
-                    var params = {v: "custom:(display,person,uuid,retired)"};
+                    var params = {
+                        v: "custom:(display,person,uuid,retired,attributes:(attributeType:(display),value,voided))"
+                    };
                     return providerService.list(params).then(function (response) {
-                        var results = _.filter(response.data.results, function (provider) {
-                            return !provider.retired;
-                        });
-                        return _.uniqBy(results, function (result) {
-                            return result.person && result.person.display;
+                        return _.filter(response.data.results, function (provider) {
+                            return _.find(provider.attributes, function (attribute) {
+                                return !attribute.voided && !provider.retired && attribute.value && attribute.attributeType.display === Bahmni.Appointments.Constants.availableForAppointments;
+                            });
                         });
                     });
                 };
@@ -59,5 +60,6 @@ angular.module('bahmni.appointments').factory('appointmentConfigInitialization',
 
                 return init();
             };
-        }]
+        }
+    ]
 );

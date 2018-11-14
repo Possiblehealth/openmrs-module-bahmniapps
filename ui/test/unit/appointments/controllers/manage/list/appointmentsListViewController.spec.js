@@ -2,11 +2,11 @@
 
 describe('AppointmentsListViewController', function () {
     var controller, scope, stateparams, spinner, appointmentsService, appService, appDescriptor, _appointmentsFilter,
-        printer, confirmBox, $translate, $state, messagingService;
+        printer, confirmBox, $translate, $state, messagingService, interval;
 
     beforeEach(function () {
         module('bahmni.appointments');
-        inject(function ($controller, $rootScope, $stateParams, $httpBackend) {
+        inject(function ($controller, $rootScope, $stateParams, $httpBackend, $interval) {
             scope = $rootScope.$new();
             controller = $controller;
             stateparams = $stateParams;
@@ -33,6 +33,7 @@ describe('AppointmentsListViewController', function () {
             $httpBackend.expectGET('../i18n/appointments/locale_en.json').respond('<div></div>');
             $httpBackend.expectGET('/bahmni_config/openmrs/i18n/appointments/locale_en.json').respond('<div></div>');
             $httpBackend.expectGET('/openmrs/ws/rest/v1/provider').respond('<div></div>');
+            interval = jasmine.createSpy('$interval', $interval).and.callThrough();
         });
     });
 
@@ -48,7 +49,8 @@ describe('AppointmentsListViewController', function () {
             $translate: $translate,
             confirmBox: confirmBox,
             $state: $state,
-            messagingService: messagingService
+            messagingService: messagingService,
+            $interval: interval
         });
     };
 
@@ -81,16 +83,6 @@ describe('AppointmentsListViewController', function () {
         expect(scope.searchedPatient).toBeTruthy();
     });
 
-    it('should get appointments for the date if searchedPatient is false', function () {
-        stateparams = {
-            isSearchEnabled: false,
-            patient: {name: 'Test patient', uuid: 'patientUuid'}
-        };
-        createController();
-        expect(appointmentsService.getAllAppointments).toHaveBeenCalledWith({forDate: moment().startOf('day').toDate()});
-        expect(spinner.forPromise).toHaveBeenCalled();
-    });
-
     it('should not get appointments for the date if searchedPatient is true', function () {
         stateparams = {
             isSearchEnabled: true,
@@ -101,9 +93,19 @@ describe('AppointmentsListViewController', function () {
         expect(spinner.forPromise).not.toHaveBeenCalled();
     });
 
+    it('should not fetch appointments when doFetchAppointmentsData is set to false', function () {
+        $state.params = {doFetchAppointmentsData: false};
+        createController();
+        var viewDate = new Date('1970-01-01T11:30:00.000Z');
+        scope.getAppointmentsForDate(viewDate);
+        expect(appointmentsService.getAllAppointments).not.toHaveBeenCalled();
+        expect(spinner.forPromise).not.toHaveBeenCalled();
+    });
+
     it('should get appointments for date', function () {
         createController();
         var viewDate = new Date('1970-01-01T11:30:00.000Z');
+        $state.params = {doFetchAppointmentsData: true};
         scope.getAppointmentsForDate(viewDate);
         expect(stateparams.viewDate).toEqual(viewDate);
         expect(appointmentsService.getAllAppointments).toHaveBeenCalledWith({forDate: viewDate});
@@ -233,11 +235,15 @@ describe('AppointmentsListViewController', function () {
         appointmentsService.getAllAppointments.and.returnValue(specUtil.simplePromise({data: appointments}));
         stateparams.filterParams = {serviceUuids: ["02666cc6-5f3e-4920-856d-ab7e28d3dbdb"]};
         createController();
+        var viewDate = new Date('2017-08-28T11:30:00.000Z');
+        $state.params = {doFetchAppointmentsData: true};
+        scope.getAppointmentsForDate(viewDate);
         expect(scope.appointments).toBe(appointments);
         expect(scope.filteredAppointments.length).toEqual(1);
         expect(scope.filteredAppointments[0]).toEqual(appointments[0]);
     });
-    it("should display seached patient appointment history", function () {
+
+    it("should display searched patient appointment history", function () {
         var appointments = [{
             "uuid": "347ae565-be21-4516-b573-103f9ce84a20",
             "appointmentNumber": "0000",
@@ -335,6 +341,9 @@ describe('AppointmentsListViewController', function () {
             isSearchEnabled: false
         };
         createController();
+        var viewDate = new Date('2017-08-28T11:30:00.000Z');
+        $state.params = {doFetchAppointmentsData: true};
+        scope.getAppointmentsForDate(viewDate);
         expect(scope.appointments).toBe(appointments);
         expect(scope.searchedPatient).toBeFalsy();
         scope.displaySearchedPatient([appointments[1]]);
@@ -343,6 +352,7 @@ describe('AppointmentsListViewController', function () {
         expect(stateparams.isFilterOpen).toBeFalsy();
         expect(stateparams.isSearchEnabled).toBeTruthy();
     });
+
     describe("goBackToPreviousView", function () {
         var appointments;
         beforeEach(function () {
@@ -439,6 +449,7 @@ describe('AppointmentsListViewController', function () {
             }];
             appointmentsService.getAllAppointments.and.returnValue(specUtil.simplePromise({data: appointments}));
         });
+
         it("should reset filtered appointments to its previous data", function () {
             createController();
             scope.filteredAppointments = appointments;
@@ -450,6 +461,7 @@ describe('AppointmentsListViewController', function () {
             expect(stateparams.isFilterOpen).toBeTruthy();
             expect(stateparams.isSearchEnabled).toBeFalsy();
         });
+
         it("should sort appointments by the sort column", function () {
             scope.filterParams = {
                 providerUuids: [],
@@ -502,9 +514,10 @@ describe('AppointmentsListViewController', function () {
             _appointmentsFilter.and.callFake(function () {
                 return appointments;
             });
+            $state.params = {doFetchAppointmentsData: true};
             appointmentsService.getAllAppointments.and.returnValue(specUtil.simplePromise({data: appointments}));
             createController();
-
+            scope.getAppointmentsForDate(new Date(200000));
             scope.sortAppointmentsBy('patient.name');
             expect(scope.sortColumn).toEqual('patient.name');
             expect(scope.filteredAppointments.length).toEqual(2);
@@ -630,11 +643,13 @@ describe('AppointmentsListViewController', function () {
                 }
             };
             var appointments = [appointment1, appointment2];
+            $state.params = {doFetchAppointmentsData: true};
             appointmentsService.getAllAppointments.and.returnValue(specUtil.simplePromise({data: appointments}));
             _appointmentsFilter.and.callFake(function () {
                 return appointments;
             });
             createController();
+            scope.getAppointmentsForDate(new Date(200000));
             scope.sortAppointmentsBy('patient.name');
             expect(scope.reverseSort).toEqual(true);
             scope.sortAppointmentsBy('patient.name');
@@ -714,11 +729,13 @@ describe('AppointmentsListViewController', function () {
         it('should filter the appointments on change of filter params', function () {
             var appointment = {patient: {name: 'patient'}};
             scope.appointments = [appointment];
+            $state.params = {doFetchAppointmentsData: true};
             _appointmentsFilter.and.callFake(function () {
                 return appointment;
             });
             stateparams.filterParams = {};
             createController();
+            scope.getAppointmentsForDate(new Date(200000));
             stateparams.filterParams = {serviceUuids: ['serviceUuid']};
             scope.$digest();
 
@@ -823,7 +840,7 @@ describe('AppointmentsListViewController', function () {
                 "creatorName": null
             },
             "serviceType": null,
-            "provider": null,
+            "providers": null,
             "location": null,
             "startDateTime": 1503891000000,
             "endDateTime": 1503900900000,
@@ -838,7 +855,7 @@ describe('AppointmentsListViewController', function () {
         createController();
         scope.searchedPatient = true;
         scope.printPage();
-        expect(printer.print).toHaveBeenCalledWith("views/manage/list/listView.html",
+        expect(printer.print).toHaveBeenCalledWith("views/manage/list/defaultListPrint.html",
             {
                 searchedPatient: scope.searchedPatient,
                 filteredAppointments: scope.filteredAppointments,
@@ -1108,4 +1125,66 @@ describe('AppointmentsListViewController', function () {
         expect(scope.colorsForListView.Cancelled).toBe("Red");
         expect(scope.colorsForListView.Missed).toBe("Orange");
     });
+
+    it('should get config value for autoRefreshIntervalInSeconds', function () {
+        createController();
+        expect(appDescriptor.getConfigValue).toHaveBeenCalledWith('autoRefreshIntervalInSeconds');
+    });
+
+    it('should call interval function when autoRefreshIntervalInSeconds is defined', function () {
+        appDescriptor.getConfigValue.and.callFake(function (value) {
+            if (value === 'autoRefreshIntervalInSeconds') {
+                return 10;
+            }
+            return undefined;
+        });
+
+        createController();
+
+        expect(interval).toHaveBeenCalled();
+    });
+
+    it('should not call interval function when autoRefreshIntervalInSeconds is an invalid string', function () {
+        appDescriptor.getConfigValue.and.callFake(function (value) {
+            if (value === 'autoRefreshIntervalInSeconds') {
+                return "invalid";
+            }
+            return undefined;
+        });
+
+        createController();
+
+        expect(interval).not.toHaveBeenCalled();
+    });
+
+    it('should cancel interval when autoRefreshIntervalInSeconds is defined', function () {
+        appDescriptor.getConfigValue.and.callFake(function (value) {
+            if (value === 'autoRefreshIntervalInSeconds') {
+                return 10;
+            }
+            return undefined;
+        });
+        spyOn(interval, 'cancel');
+        createController();
+
+        scope.$destroy();
+
+        expect(interval.cancel).toHaveBeenCalled();
+    });
+
+    it('should not cancel interval when autoRefreshIntervalInSeconds is undefined', function () {
+        appDescriptor.getConfigValue.and.callFake(function (value) {
+            if (value === 'autoRefreshIntervalInSeconds') {
+                return undefined;
+            }
+            return undefined;
+        });
+        spyOn(interval, 'cancel');
+        createController();
+
+        scope.$destroy();
+
+        expect(interval.cancel).not.toHaveBeenCalled();
+    });
+
 });
