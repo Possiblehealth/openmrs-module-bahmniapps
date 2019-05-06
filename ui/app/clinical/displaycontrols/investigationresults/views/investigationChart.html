@@ -1,24 +1,17 @@
-<section class="block section-grid">
+<section class="block section-grid expand-investigation-chart">
     <h2 ng-click="toggleChart()" class="section-title row-click">
         <i class="fa fa-caret-right" ng-hide="showChart"></i>
         <i class="fa fa-caret-down" ng-show="showChart"></i>
-        {{'INVESTIGATION_CHART_KEY' | translate }}
+        <span>{{'INVESTIGATION_CHART_KEY' | translate }}</span>
     </h2>
     <div>
         <div class="hidden-print">
-            <!-- Always hide this table on print -->
-            <table class="ipd-investigation h-scroll" bindonce="accessions" bm-show="showChart">
+            <table class="investigation-chart" bindonce="accessions" bm-show="showChart">
                 <thead>
-                <tr>
-                    <th>&nbsp;</th>
-                    <td class="normal" ng-repeat="testOrderLabel in accessions.getTestOrderLabels()">
-                        <span bo-text="testOrderLabel.testName"></span>
-                                <span ng-show="accessions.hasRange(testOrderLabel)" class="range">
-                                    <span bo-text="'(' + testOrderLabel.minNormal + ' - ' + testOrderLabel.maxNormal + ')'"></span>
-                                    <span bo-text="testOrderLabel.testUnitOfMeasurement"></span>
-                                </span>
-                    </td>
-                </tr>
+                    <tr>
+                        <th nowrap>&nbsp;</th>
+                        <td nowrap ng-repeat="dateLabel in accessions.getDateLabels()">{{::dateLabel.date | bahmniDate}}</td>
+                    </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="dateLabel in accessions.getDateLabels()">
@@ -46,9 +39,8 @@
                                     <span ng-class="{'is-abnormal': res.abnormal}">{{res.result}}</span>
                                 </span>
                             </span>
-                        </span>
-                    </td>
-                </tr>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>

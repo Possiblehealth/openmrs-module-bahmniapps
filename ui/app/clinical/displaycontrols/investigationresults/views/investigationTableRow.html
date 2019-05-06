@@ -1,5 +1,5 @@
 <tr bo-if="test.isPanel" class="header">
-    <td colspan="3"><strong>{{test.orderName}}</strong></td>
+    <td colspan="3"><strong>{{ test.orderName}}</strong></td>
 </tr>
 
 <tr bo-if="!test.isPanel" ng-class="{'test-notes-parent': test.notes, 'notes-open': test.showDetails}">
@@ -9,14 +9,14 @@
             <a class="uploaded-file"  href="{{test.labReportUrl}}" stop-event-propagation="click" target="_blank">{{test.testName}}
                 <span bo-show="test.hasRange" class="range">
                     <span bo-text="'(' + test.minNormal + ' - ' + test.maxNormal + ')'"></span>
-                    <span bo-show="test.testUnitOfMeasurement" class="units" bo-text="test.testUnitOfMeasurement"></span>
                 </span>
+                 <span bo-show="test.testUnitOfMeasurement" class="range" bo-text="test.testUnitOfMeasurement"></span>
             </a>
         </span>
         <span bo-show="test.hasRange && !test.uploadedFileName" class="range">
             <span bo-text="'(' + test.minNormal + ' - ' + test.maxNormal + ')'"></span>
-            <span bo-show="test.testUnitOfMeasurement" class="units" bo-text="test.testUnitOfMeasurement"></span>
         </span>
+        <span bo-show="test.testUnitOfMeasurement" class="range" bo-text="test.testUnitOfMeasurement"></span>
     </td>
     <td class="value has-toggle-btn">
         <span bo-class="{'referred-out': test.referredOut}">
@@ -38,11 +38,12 @@
 <tr ng-if="test.notes" ng-class="{'has-test-notes': test.notes}">
     <td colspan="3" class="notes test-notes">
         <i class="fa fa-comments left"></i>
-        <pre class="left">{{test.notes}}</pre>
+        <pre class="left">{{ test.notes }}</pre>
         <div class="footer-note right">
             <span ng-if="!displayNepaliDates">{{ test.accessionDateTime | bahmniDate}}&nbsp;</span>
             <span ng-if="displayNepaliDates">{{ test.accessionDateTime | npDate}}&nbsp;</span>
             <span class="provider" ng-show="test.provider" bo-text="test.provider"></span>
+
         </div>
     </td>
 </tr>
@@ -52,6 +53,7 @@
             <span ng-if="displayNepaliDates">{{ test.accessionDateTime | bahmniDate}}&nbsp;</span>
             <span ng-if="displayNepaliDates">{{ test.accessionDateTime | npDate}}&nbsp;</span>
             <span class="provider" ng-show="test.provider" bo-text="test.provider"></span>
+
         </div>
     </td>
 </tr>

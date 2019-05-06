@@ -11,6 +11,7 @@
         <span>{{::drugOrder.getSpanDetails()}}</span>
         <span ng-if="::drugOrder.isDiscontinuedOrStopped()" ng-class="::{'discontinued-text':drugOrder.isDiscontinuedOrStopped()} && !displayNepaliDates">Stopped on {{::drugOrder.effectiveStopDate | bahmniDate}}</span>
         <span ng-if="::drugOrder.isDiscontinuedOrStopped()" ng-class="::{'discontinued-text':drugOrder.isDiscontinuedOrStopped()} && displayNepaliDates">Stopped on {{::drugOrder.effectiveStopDate | npDate}}</span>
+
     </td>
     <td class="days">
         <span class="fr" ng-if="!displayNepaliDates">{{::drugOrder.effectiveStartDate | bahmniDate}}</span>

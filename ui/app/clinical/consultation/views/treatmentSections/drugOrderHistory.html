@@ -1,6 +1,6 @@
 <section class="drug-orders-history" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
     <div ng-if="drugOrderGroupsEmpty()">
-        <p class="placeholder-text">No prescriptions saved yet</p>
+        <p class="placeholder-text">{{'MEDICATION_NO_PRESCRIPTION_SAVED_PLACEHOLDER'|translate}}</p>
     </div>
 	<div class="inpage">
 		<div class="tabs">
@@ -11,14 +11,14 @@
                     <span ng-if="displayNepaliDates">{{drugOrderGroup.label | npDate}}</span>
                     <i class="fa fa-star current-visit-icon" title="Current visit" ng-if="drugOrderGroup.isCurrentVisit"></i>
                 </label>
-                <button class="secondary-button refill-drugs-btn fr" ng-click="refillAll(drugOrderGroup.drugOrders)" ng-if="!drugOrderGroupsEmpty()">Refill All</button>
+                <button class="secondary-button refill-drugs-btn fr" ng-click="refillAll(drugOrderGroup.drugOrders)" ng-if="!drugOrderGroupsEmpty()">{{ ::'MEDICATION_REFILL_ALL' | translate }}</button>
                 <button  ng-repeat="orderAttribute in getOrderAttributes()" class="secondary-button dispense-all-btn fr" show-if-privilege="{{dispensePrivilege}}" ng-if="!drugOrderGroupsEmpty()"  ng-click="updateAllOrderAttributesByName(orderAttribute,drugOrderGroup)" ng-disabled="!canUpdateAtLeastOneOrderAttributeOfName(drugOrderGroup,orderAttribute.name)">
                     <i  ng-init="allOrderAttributesOfNameSet(drugOrderGroup,orderAttribute.name)" class="fa fa-check" ng-show="drugOrderGroup[orderAttribute.name].selected" ></i>
                     {{orderAttribute.name}} All
                 </button>
                 <div class="inpage-tab-panel">
 					<div class="inpage-tab-content">
-                        <p ng-if="!drugOrderGroup.drugOrders.length" class="placeholder-text">No Recent Treatments</p>
+                        <p ng-if="!drugOrderGroup.drugOrders.length" class="placeholder-text">{{ ::'MEDICATION_NO_RECENT_TREATMENT' | translate }}</p>
                         <ul class="table-mimic">
 							<li id="ordered-drug-orders" ng-repeat="drugOrder in drugOrderGroup.drugOrders" ng-class="{'active-drug' : drugOrder.isActive(), 'highlight' : drugOrder.isBeingEdited, 'scheduled-drug': drugOrder.isScheduled()}">
                                 <div class="drug-details" ng-class="{'strike-through': drugOrder.isDiscontinuedOrStopped()}">
@@ -40,10 +40,10 @@
                                             <i class="fa fa-undo"></i>
                                         </button>
                                         <button class="stop-drug-btn" ng-if="!drugOrder.isMarkedForDiscontinue" ng-disabled="!drugOrder.isActive() || !drugOrder.isDiscontinuedAllowed" ng-click="discontinue(drugOrder)">
-                                            Stop
+                                            {{ ::'MEDICATION_STOP' | translate }}
                                         </button>
                                         <button class="refill-btn" ng-disabled="!drugOrder.effectiveStopDate || drugOrder.isDrugRetired" ng-click="refill(drugOrder)">
-                                            Refill
+                                            {{ ::'MEDICATION_REFILL' | translate }}
                                         </button>
                                         <button class="toggle" ng-class="{'has-notes': drugOrder.additionalInstructions}" ng-click="toggleShowAdditionalInstructions(drugOrder)">
                                             <i class="fa fa-plus-circle" ng-hide="drugOrder.showAdditionalInstructions"></i>
@@ -77,7 +77,7 @@
                                     <div class="form fl drug-stop-container">
                                         <article class="form-field">
                                             <div class="field-attribute stop-date-label">
-                                                <label class="control-label">Stop Date</label>
+                                                <label class="control-label">{{ ::'DRUG_DETAILS_STOP_DATE' | translate }}</label>
                                             </div>
                                             <div class="field-value">
                                                 <input ng-if="enableNepaliCalendar" class="nepali-datepicker" type="text" ng-model="drugOrder.dateStoppedNepali" 

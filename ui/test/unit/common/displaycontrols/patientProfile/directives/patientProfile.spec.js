@@ -1,8 +1,9 @@
 'use strict';
 
 describe("Patient Profile display control", function () {
-    var element, scope, $compile, mockBackend, $window, $q, openMRSPatientMockData, visitService, appService,
-        appDescriptor, clinicalAppConfig;
+
+    var element, scope, $compile, mockBackend, $window, $q, openMRSPatientMockData, visitService, translateFilter, appDescriptor, clinicalAppConfig;
+
 
     beforeEach(module('ngHtml2JsPreprocessor'));
     beforeEach(module('bahmni.common.patient'));
@@ -11,6 +12,8 @@ describe("Patient Profile display control", function () {
     beforeEach(module(function ($provide) {
         clinicalAppConfig = {patientConfig: {}};
 
+        translateFilter = jasmine.createSpy('translateFilter');
+        $provide.value('translateFilter', translateFilter);
         $provide.value('$stateParams', {configName: "programs"});
 
         $window = jasmine.createSpyObj('$window', ['open']);
