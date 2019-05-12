@@ -15,7 +15,6 @@ angular.module('bahmni.registration')
         function ($window, $scope, $rootScope, spinner, patientService, providerService, appService) {
             $scope.displayNepaliDates = appService.getAppDescriptor().getConfigValue("displayNepaliDates");
             $scope.enableNepaliCalendar = appService.getAppDescriptor().getConfigValue("enableNepaliCalendar");
-    
             $scope.addPlaceholderRelationship = function () {
                 $scope.patient.newlyAddedRelationships.push({});
             };

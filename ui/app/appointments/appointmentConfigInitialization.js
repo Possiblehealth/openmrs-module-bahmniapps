@@ -60,4 +60,3 @@ angular.module('bahmni.appointments').factory('appointmentConfigInitialization',
             };
         }]
 );
-git k

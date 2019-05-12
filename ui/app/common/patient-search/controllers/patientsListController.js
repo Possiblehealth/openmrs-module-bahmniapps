@@ -106,8 +106,6 @@ angular.module('bahmni.common.patientSearch')
         $scope.isHeadingOfOrderPlacedOn = function (heading) {
             return _.isEqual(Bahmni.Common.PatientSearch.Constants.orderPlacedOnHeading, heading);
         };
-
-
         $scope.getPrintableHeadings = function (patients) {
             var headings = $scope.getHeadings(patients);
             var printableHeadings = headings.filter(function (heading) {

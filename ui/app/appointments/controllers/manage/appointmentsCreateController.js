@@ -1,5 +1,4 @@
 'use strict';
-
 angular.module('bahmni.appointments')
 
     .controller('AppointmentsCreateController', ['$scope', '$rootScope', '$q', '$window', '$state', '$translate', 'spinner', 'patientService',
@@ -7,7 +6,6 @@ angular.module('bahmni.appointments')
         'ngDialog', 'appService', '$stateParams', 'appointmentCreateConfig', 'appointmentContext', '$http', 'sessionService',
         function ($scope, $rootScope, $q, $window, $state, $translate, spinner, patientService, appointmentsService, appointmentsServiceService,
                   messagingService, appointmentCommonService, ngDialog, appService, $stateParams, appointmentCreateConfig, appointmentContext, $http, sessionService) {
-
             $scope.isFilterOpen = $stateParams.isFilterOpen;
             $scope.showConfirmationPopUp = true;
             $scope.enableSpecialities = appService.getAppDescriptor().getConfigValue('enableSpecialities');
@@ -39,8 +37,6 @@ angular.module('bahmni.appointments')
             $scope.minCharLengthToTriggerPatientSearch = appService.getAppDescriptor().getConfigValue('minCharLengthToTriggerPatientSearch') || 3;
 
             $scope.maxAppointmentProviders = appService.getAppDescriptor().getConfigValue("maxAppointmentProviders") || 1;
-
-
             var isProviderNotAvailableForAppointments = function (selectedProvider) {
                 var providers = appointmentCreateConfig.providers;
                 return _.isUndefined(_.find(providers, function (provider) {
@@ -165,7 +161,6 @@ angular.module('bahmni.appointments')
                     $scope.patientAppointments = oldAppointments.data;
                 }));
             };
-
             var clearSlotsInfo = function () {
                 delete $scope.currentLoad;
                 delete $scope.maxAppointmentsLimit;
