@@ -48,7 +48,6 @@ angular.module('bahmni.appointments').factory('appointmentConfigInitialization',
                             return _.find(provider.attributes, function (attribute) {
                                 return !attribute.voided && !provider.retired && attribute.value && attribute.attributeType.display === Bahmni.Appointments.Constants.availableForAppointments;
                             });
-
                         });
                     });
                 };
@@ -61,3 +60,4 @@ angular.module('bahmni.appointments').factory('appointmentConfigInitialization',
             };
         }]
 );
+git k
