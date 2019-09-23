@@ -32,7 +32,13 @@ angular.module('bahmni.clinical')
                     }).then(function (response) {
                         var allTemplates = response.data.results[0].setMembers;
                         if (filterObsTemplate) {
-                            var filteredTemplates = allTemplates.filter(template => availableTemplates.includes(template.name.name));
+                            var filteredTemplates = [];
+                            for(var i = 0; i < allTemplates.length; i++){
+                                 if (availableTemplates.includes(allTemplates[i].name.name)) {
+                                    filteredTemplates.push(allTemplates[i]);
+                                 }
+                            }
+                            
                             createConceptSections(filteredTemplates);
                         } else {
                             createConceptSections(allTemplates);
