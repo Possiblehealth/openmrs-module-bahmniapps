@@ -25,6 +25,13 @@ angular.module('bahmni.appointments')
                 });
             };
 
+            this.searchAppointments = function (data) {
+                return $http.post(Bahmni.Appointments.Constants.searchAppointmentsUrl, data, {
+                    withCredentials: true,
+                    headers: {"Accept": "application/json", "Content-Type": "application/json"}
+                });
+            };
+
             this.getAllAppointments = function (params) {
                 return $http.get(Bahmni.Appointments.Constants.getAllAppointmentsUrl, {
                     params: params,
@@ -54,13 +61,6 @@ angular.module('bahmni.appointments')
                 var params = {toStatus: toStatus, onDate: onDate};
                 var changeStatusUrl = appService.getAppDescriptor().formatUrl(Bahmni.Appointments.Constants.changeAppointmentStatusUrl, {appointmentUuid: appointmentUuid});
                 return $http.post(changeStatusUrl, params, {
-                    withCredentials: true,
-                    headers: {"Accept": "application/json", "Content-Type": "application/json"}
-                });
-            };
-
-            this.undoCheckIn = function (appointmentUuid) {
-                return $http.post(Bahmni.Appointments.Constants.undoCheckInUrl + appointmentUuid, {
                     withCredentials: true,
                     headers: {"Accept": "application/json", "Content-Type": "application/json"}
                 });

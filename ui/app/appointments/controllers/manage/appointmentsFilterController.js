@@ -7,6 +7,8 @@ angular.module('bahmni.appointments')
                 $scope.isSpecialityEnabled = appService.getAppDescriptor().getConfigValue('enableSpecialities');
                 $scope.isServiceTypeEnabled = appService.getAppDescriptor().getConfigValue('enableServiceTypes');
                 $scope.isFilterOpen = $state.params.isFilterOpen;
+                $scope.expandToDepth = appService.getAppDescriptor().getConfigValue('collapseServiceFilter') == true ?
+                    Bahmni.Appointments.Constants.collapseServiceFilter : Bahmni.Appointments.Constants.defaultExpandServiceFilter;
                 $scope.isSearchEnabled = $state.params.isSearchEnabled;
                 $scope.statusList = _.map(Bahmni.Appointments.Constants.appointmentStatusList, function (status) {
                     return {name: status, value: status};
@@ -20,11 +22,26 @@ angular.module('bahmni.appointments')
                         return status.name !== "Cancelled";
                     });
                 }
-                var params = {v: "custom:(display,person,uuid)"};
+
+                var params = {v: "custom:(display,person,uuid,retired,attributes:(attributeType:(display),value,voided))"};
+
+                $scope.$watch("selectedProviders", function (selectedProviders) {
+                    if (!_.isUndefined($scope.selectedSpecialities)) {
+                        $scope.applyFilter();
+                    }
+                });
+
+                $scope.$watch("selectedStatusList", function (selectedStatusList) {
+                    if (!_.isUndefined($scope.selectedSpecialities)) {
+                        $scope.applyFilter();
+                    }
+                });
 
                 spinner.forPromise($q.all([appointmentsServiceService.getAllServicesWithServiceTypes(), providerService.list(params)]).then(function (response) {
-                    $scope.providers = _.uniqBy(response[1].data.results, function (provider) {
-                        return provider.person.display;
+                    $scope.providers = _.filter(response[1].data.results, function (provider) {
+                        return _.find(provider.attributes, function (attribute) {
+                            return !attribute.voided && !provider.retired && attribute.value && attribute.attributeType.display === Bahmni.Appointments.Constants.availableForAppointments;
+                        });
                     }).map(function (provider) {
                         provider.name = provider.person.display;
                         return provider;
@@ -80,6 +97,30 @@ angular.module('bahmni.appointments')
                 }));
             };
 
+            $scope.$watch("searchText", function () {
+                if ($scope.expandToDepth == Bahmni.Appointments.Constants.collapseServiceFilter) {
+                    expandCollapsedFilter();
+                }
+            });
+
+            var collapseExpandedFilter = function () {
+                if (!_.isUndefined($scope.selectedSpecialities)) {
+                    var collapsableNodes = $scope.selectedSpecialities.filter(function (selectedSpeciality) {
+                        return _.isUndefined(selectedSpeciality.selected);
+                    });
+                    ivhTreeviewMgr.collapseRecursive($scope.selectedSpecialities, collapsableNodes);
+                }
+            };
+
+            var expandCollapsedFilter = function () {
+                if (!_.isUndefined($scope.searchText) && $scope.searchText.length > 0) {
+                    ivhTreeviewMgr.expandRecursive($scope.selectedSpecialities);
+                }
+                else {
+                    collapseExpandedFilter();
+                }
+            };
+
             $scope.filterSelected = function () {
                 $scope.filterSelectedValues = $scope.showSelected ? {selected: true} : undefined;
             };
@@ -103,17 +144,26 @@ angular.module('bahmni.appointments')
                     statusList: []
                 };
             };
+
             $scope.setSelectedSpecialities = function (selectedSpecialities) {
                 $scope.selectedSpecialities = selectedSpecialities;
+                $scope.applyFilter();
             };
 
             $scope.getCurrentAppointmentTabName = function () {
                 return $state.current.tabName;
             };
 
+            var collapseExpandedFilterOnFilterReset = function () {
+                if ($scope.expandToDepth == Bahmni.Appointments.Constants.collapseServiceFilter) {
+                    ivhTreeviewMgr.collapseRecursive($scope.selectedSpecialities, $scope.selectedSpecialities);
+                }
+            };
+
             $scope.resetFilter = function () {
                 if ($scope.selectedSpecialities) {
                     ivhTreeviewMgr.deselectAll($scope.selectedSpecialities, false);
+                    collapseExpandedFilterOnFilterReset();
                 }
                 $scope.selectedProviders = [];
                 $scope.selectedStatusList = [];

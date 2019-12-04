@@ -51,12 +51,7 @@ Bahmni.Registration.CreatePatientRequestMapper = (function () {
         };
 
         this.setImage(patient, openMRSPatient);
-        if (patient.relationships) {
-            patient.relationships.forEach(function (relationship) {
-                delete relationship.endDateBS;
-            });
-            openMRSPatient.relationships = patient.relationships;
-        }
+        openMRSPatient.relationships = patient.relationships;
         return openMRSPatient;
     };
 

@@ -1,15 +1,15 @@
 'use strict';
 
 describe("Patient Profile display control", function () {
-    var element, scope, $compile, mockBackend, $window, $q, openMRSPatientMockData, visitService, appService,
-        appDescriptor, clinicalAppConfig;
+    var element, scope, $compile, mockBackend, $window, $q, openMRSPatientMockData, visitService, translateFilter;
 
     beforeEach(module('ngHtml2JsPreprocessor'));
     beforeEach(module('bahmni.common.patient'));
     beforeEach(module('bahmni.common.uiHelper'));
     beforeEach(module('bahmni.common.displaycontrol.patientprofile'));
     beforeEach(module(function ($provide) {
-        clinicalAppConfig = {patientConfig: {}};
+        translateFilter = jasmine.createSpy('translateFilter');
+        $provide.value('translateFilter', translateFilter);
 
         $provide.value('$stateParams', {configName: "programs"});
 
@@ -39,15 +39,6 @@ describe("Patient Profile display control", function () {
             return specUtil.respondWithPromise($q, {data: openMRSPatientMockData});
         });
         $provide.value('patientService', patientService);
-
-        appDescriptor = jasmine.createSpyObj('appDescriptor', ['getConfigValue']);
-        appService = jasmine.createSpyObj('appService',['getAppDescriptor', 'getConfigValue']);
-
-        appDescriptor.getConfigValue.and.callFake(function(){
-            return clinicalAppConfig.patientConfig;
-        });
-        appService.getAppDescriptor.and.returnValue(appDescriptor);
-        $provide.value('appService', appService);
 
         var spinner = jasmine.createSpyObj('spinner', ['forPromise']);
         spinner.forPromise.and.callFake(function (param) {
@@ -82,8 +73,8 @@ describe("Patient Profile display control", function () {
     var patientMockData;
     beforeEach(function () {
         patientMockData = {
+            "name": "Patient name",
             "genderText": "Female",
-            "name": "GIVEN_NAME FAMILY_NAME",
             "identifier": "Some identifier",
             "ageText": "21 years",
             "address": {
@@ -92,10 +83,7 @@ describe("Patient Profile display control", function () {
                 cityVillage: 'Some village',
                 state: "State",
                 zip: ''
-            },
-            givenName:'GIVEN_NAME',
-            middleName:'MIDDLE_NAME',
-            familyName:'FAMILY_NAME'
+            }
         };
         spyPatientMapperInstance.map.and.returnValue(patientMockData);
     });
@@ -194,18 +182,6 @@ describe("Patient Profile display control", function () {
         var REP = "custom:(attributes:(value,attributeType:(display,name)))";
         expect(visitService.getVisit).toHaveBeenCalledWith("visit-uuid-00001", REP);
         expect(isoScope.hasBeenAdmitted).toBe(true);
-    });
-
-    it("should set patient name with middle name when configured",function(){
-        clinicalAppConfig.patientConfig.showMiddleNameOn = ['patient-profile'];
-        var isoScope = createIsoScope({});
-        expect(isoScope.patient.name).toBe('GIVEN_NAME MIDDLE_NAME FAMILY_NAME');
-    });
-
-    it("should not set patient name with middle name when not configured",function(){
-        clinicalAppConfig.patientConfig.showMiddleNameOn = [];
-        var isoScope = createIsoScope({});
-        expect(isoScope.patient.name).toBe('GIVEN_NAME FAMILY_NAME');
     });
 
     var createIsoScope = function (config) {

@@ -61,6 +61,10 @@
                     />
 
                     <input type="hidden" ng-model="newRelationship.personB" />
+                    <span class="asterick showOn-desktop">*</span>
+                    <span class="no-person" ng-show="showPersonNotFound(newRelationship)">{{ ::'REGISTRATION_LABEL_PERSON_NOT_FOUND' | translate}}</span>
+                    <span ng-show="!showPersonNotFound(newRelationship)">{{newRelationship.content}}</span>
+                    <span class="no-person" ng-show="duplicateRelationship(newRelationship)">{{ ::'REGISTRATION_LABEL_RELATIONSHIP_EXISTS' | translate}}</span>
                 </div>
                 <div class="col col3 form-field">
                     <strong class="till-text">{{ ::'REGISTRATION_LABEL_TILL' | translate}}</strong>

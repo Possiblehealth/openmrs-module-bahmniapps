@@ -125,6 +125,7 @@ angular.module('bahmni.common.conceptSet')
                     $scope.allTemplates.splice(index, 1);
                 }
                 else {
+                    $scope.allTemplates[index].isAdded = false;
                     var clonedObj = $scope.allTemplates[index].clone();
                     $scope.allTemplates[index] = clonedObj;
                     $scope.allTemplates[index].isAdded = false;
