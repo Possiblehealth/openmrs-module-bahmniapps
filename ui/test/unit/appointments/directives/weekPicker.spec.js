@@ -15,7 +15,7 @@ describe('WeekPicker', function () {
     }));
 
     var createElement = function () {
-        var html = '<week-picker view-date="viewDate" on-change="toggleChanged" week-start="weekStart" show-buttons="true"></week-picker>';
+        var html = '<week-picker view-date="viewDate" on-change="toggleChanged" week-start="weekStart"></week-picker>';
 
         var element = compile(angular.element(html))(scope);
         scope.$digest();
@@ -30,8 +30,7 @@ describe('WeekPicker', function () {
         expect(scope.viewDate).toEqual(moment().startOf('day').toDate());
     });
 
-    it('should call function provided to ngChange when data is changed with week start day as Monday', function () {
-        scope.weekStart = 1;
+    it('should call function provided to ngChange when data is changed with the ISO week day start standard', function () {
         scope.toggleChanged = jasmine.createSpy('toggleChanged');
         scope.viewDate = moment("2017-02-01").toDate();
        createElement();
@@ -41,8 +40,8 @@ describe('WeekPicker', function () {
             .toEqual(moment("2017-02-05").endOf('day').toDate());
     });
 
-    it('should call function provided to ngChange when data is changed with week start day as Sunday', function () {
-        scope.weekStart = 7;
+    it('should call function provided to ngChange when data is changed with week start date as Sunday', function () {
+        scope.weekStart = 'week';
         scope.toggleChanged = jasmine.createSpy('toggleChanged');
         scope.viewDate = moment("2017-02-01").toDate();
         createElement();

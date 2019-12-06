@@ -71,7 +71,7 @@ describe('AppointmentsFilterController', function () {
             location = jasmine.createSpyObj('$location', ['url']);
             appDescriptor = jasmine.createSpyObj('appDescriptor', ['getConfigValue']);
             appointmentsServiceService = jasmine.createSpyObj('appointmentsServiceService', ['getAllServicesWithServiceTypes']);
-            ivhTreeviewMgr = jasmine.createSpyObj('ivhTreeviewMgr', ['deselectAll', 'selectEach', 'collapseRecursive']);
+            ivhTreeviewMgr = jasmine.createSpyObj('ivhTreeviewMgr', ['deselectAll', 'selectEach']);
             translate = jasmine.createSpyObj('$translate', ['instant']);
             appService.getAppDescriptor.and.returnValue(appDescriptor);
             appDescriptor.getConfigValue.and.returnValue(true);
@@ -738,15 +738,6 @@ describe('AppointmentsFilterController', function () {
         q.all.and.returnValue(specUtil.simplePromise([servicesWithTypes, providers]));
         createController();
         expect(scope.providers.length).toBe(2)
-    });
-
-    it("should apply filter when selectedSpecialities is set", function () {
-        q.all.and.returnValue(specUtil.simplePromise([servicesWithTypes, {data: {results: [{name:"someProvider",person : {display:"someProvider"}, uuid:"someProviderUuid", display: "someProvider"}]}}]));
-        appDescriptor.getConfigValue.and.returnValue(true);
-        createController();
-        spyOn(scope,'applyFilter');
-        scope.setSelectedSpecialities();
-        expect(scope.applyFilter).toHaveBeenCalled();
     });
 
     it("should not include retired providers", function () {

@@ -81,8 +81,7 @@ angular
                 params: {
                     viewDate: null,
                     doFetchAppointmentsData: true,
-                    appointmentsData: null,
-                    weekView: false
+                    appointmentsData: null
                 },
                 views: {
                     'content@viewAppointments': {

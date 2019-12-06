@@ -61,31 +61,21 @@ describe("conceptSetGroup", function () {
             selectedObsTemplate : [
                 {
                     "uuid": "conceptSet1",
-                    "label": "Followup1",
-                    clone: function () {
-                        return {
-                            "uuid": "conceptSet1",
-                            "label": "Followup1"
-                        }
-                    }
-                },
-                {
-                    "uuid" : "conceptSet2",
                     "label": "Followup",
                     clone: function () {
                         return {
-                            "uuid": "conceptSet2",
+                            "uuid": "conceptSet1",
                             "label": "Followup"
                         }
                     }
                 },
                 {
-                    "uuid" : "conceptSet3",
+                    "uuid" : "conceptSet2",
                     "klass": "active",
                     "label": "Followup",
                     clone: function () {
                         return {
-                            "uuid": "conceptSet3",
+                            "uuid": "conceptSet2",
                             "klass": "active",
                             "label": "Followup"
                         }
@@ -234,13 +224,11 @@ describe("conceptSetGroup", function () {
             isLoaded: true,
             klass: "active"
         };
-        expect(compiledElementScope.allTemplates.length).toEqual(3);
+        expect(compiledElementScope.allTemplates.length).toEqual(2);
         compiledElementScope.remove(0);
-        expect(compiledElementScope.allTemplates.length).toEqual(3);
-        compiledElementScope.remove(2);
-        expect(compiledElementScope.allTemplates.length).toEqual(2);
-        compiledElementScope.remove(1);
-        expect(compiledElementScope.allTemplates.length).toEqual(2);
+        expect(compiledElementScope.allTemplates.length).toEqual(1);
+        compiledElementScope.remove(0);
+        expect(compiledElementScope.allTemplates.length).toEqual(1);
     });
 
     it("canRemove should return true only if it is unsaved template", function(){
@@ -248,37 +236,7 @@ describe("conceptSetGroup", function () {
 
         compiledElementScope.$digest();
         expect(compiledElementScope.canRemove(0)).toBeTruthy();
-        expect(compiledElementScope.canRemove(1)).toBeTruthy();
-        expect(compiledElementScope.canRemove(2)).toBeFalsy();
-    });
+        expect(compiledElementScope.canRemove(1)).toBeFalsy();
 
-    it("should delete the added template", function () {
-        var compiledElementScope = executeDirective();
-        var selectConceptSetSection = {
-            name: "template",
-            hasSomeValue: function () {
-                return true;
-            },
-            klass: 'active',
-            label: 'Followup1'
-        };
-
-        compiledElementScope.leftPanelConceptSet = {
-            name: "alreadyOpenedForm",
-            isOpen: true,
-            isLoaded: true,
-            klass: "active",
-            label: 'Followup'
-        };
-        scope.$digest();
-        expect(compiledElementScope.allTemplates.length).toEqual(3);
-        compiledElementScope.showLeftPanelConceptSet(selectConceptSetSection);
-        expect(compiledElementScope.allTemplates.length).toEqual(3);
-        expect(compiledElementScope.leftPanelConceptSet.name).toEqual("template");
-        expect(compiledElementScope.allTemplates[1].label).toEqual("Followup");
-        compiledElementScope.remove(1);
-        expect(compiledElementScope.allTemplates.length).toEqual(2);
-        expect(compiledElementScope.allTemplates[1].label).toEqual("Followup");
-        expect(compiledElementScope.allTemplates[0].label).toEqual("Followup1");
     });
 });

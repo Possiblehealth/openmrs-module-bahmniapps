@@ -4,6 +4,7 @@ angular.module('bahmni.common.gallery')
     .directive('bmGalleryPane', ['$rootScope', '$document', 'observationsService', 'encounterService', 'spinner', 'configurations', 'ngDialog', 'appService',
         function ($rootScope, $document, observationsService, encounterService, spinner, configurations, ngDialog, appService) {
             var $body = $document.find('body');
+
             $rootScope.$on('$stateChangeStart', function () {
                 close();
             });
@@ -133,7 +134,7 @@ angular.module('bahmni.common.gallery')
                             });
                         });
                     }
-                    ngDialog.openConfirm({template: '../common/gallery/views/gallery.html', scope: $scope, closeByEscape: true});
+                    ngDialog.openConfirm({template: '../common/gallery/views/gallery.html', scope: $scope, closeByEscape: true, className: 'gallery-dialog ngdialog-theme-default'});
                 };
 
                 var fetchObsRelationship = function (image) {
